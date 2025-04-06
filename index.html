@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>GPT Feedback</title>
+  <title>Agent Feedback</title>
   <style>
     textarea {
       font-size: 1.1em;
@@ -14,6 +14,12 @@
       border: 1px solid #ccc;
       background-color: #f9f9f9;
     }
+    .nachricht {
+      margin-bottom: 10px;
+    }
+    .rolle {
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -23,8 +29,8 @@
   <button onclick="senden()">Absenden</button>
 
   <div id="antwort-box">
-    <strong>Antwort von GPT:</strong>
-    <p id="antwort"></p>
+    <strong>Antwortverlauf:</strong>
+    <div id="antwort"></div>
   </div>
 
 <script>
@@ -37,36 +43,38 @@
 
   async function senden() {
     const feedback = document.getElementById("feedback").value;
-    const antwortFeld = document.getElementById("antwort");
+    const antwortContainer = document.getElementById("antwort");
 
     if (!feedback.trim()) {
-      antwortFeld.innerText = "Bitte geben Sie Feedback ein.";
+      antwortContainer.innerHTML += `<p class="nachricht">❌ Bitte gib eine Nachricht ein.</p>`;
       return;
     }
 
-    // Nutzer-Nachricht zum Verlauf hinzufügen
-    messages.push({ role: "user", content: feedback });
+    // Eingabe leeren
+    document.getElementById("feedback").value = "";
 
-    antwortFeld.innerText = "⏳ GPT denkt nach...";
+    // Nutzer-Nachricht speichern & anzeigen
+    messages.push({ role: "user", content: feedback });
+    antwortContainer.innerHTML += `<p class="nachricht"><span class="rolle">🧑 Du:</span> ${feedback}</p>`;
+    antwortContainer.innerHTML += `<p class="nachricht">⏳ <em>Agent denkt nach...</em></p>`;
 
     try {
       const res = await fetch("/save-feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ feedback, messages }) // Verlauf mitsenden
+        body: JSON.stringify({ feedback, messages })
       });
 
       if (!res.ok) throw new Error("Fehler beim Server");
 
       const reply = await res.text();
-      messages.push({ role: "assistant", content: reply }); // GPT-Antwort speichern
+      messages.push({ role: "assistant", content: reply });
 
-      // Zeige Verlauf
-      antwortFeld.innerHTML += `<p><strong>Du:</strong> ${feedback}</p><p><strong>GPT:</strong> ${reply}</p>`;
-      document.getElementById("feedback").value = ""; // Eingabe leeren
+      // Agent-Antwort anzeigen
+      antwortContainer.innerHTML += `<p class="nachricht"><span class="rolle">🤖 Agent:</span> ${reply}</p>`;
     } catch (err) {
       console.error(err);
-      antwortFeld.innerText = "❌ Es gab ein Problem beim Absenden.";
+      antwortContainer.innerHTML += `<p class="nachricht">❌ Fehler bei der Agent-Antwort.</p>`;
     }
   }
 </script>
