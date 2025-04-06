@@ -3,14 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <title>GPT Feedback</title>
+  <style>
+    textarea {
+      font-size: 1.1em;
+      width: 100%;
+    }
+    #antwort-box {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+    }
+  </style>
 </head>
 <body>
   <h1>1. Was hat die Lehrperson gut gemacht?</h1>
 
-  <textarea id="feedback" rows="6" cols="80" placeholder="Schreiben Sie hier..."></textarea><br><br>
+  <textarea id="feedback" rows="6" placeholder="Schreiben Sie hier..."></textarea><br><br>
   <button onclick="senden()">Absenden</button>
 
-  <h3 id="antwort" style="margin-top: 20px;"></h3>
+  <div id="antwort-box">
+    <strong>Antwort von GPT:</strong>
+    <p id="antwort"></p>
+  </div>
 
   <script>
     async function senden() {
@@ -33,8 +48,8 @@
 
         if (!res.ok) throw new Error("Fehler beim Server");
 
-        const reply = await res.text(); // GPT-Antwort als Text
-        antwortFeld.innerText = "💬 GPT sagt: " + reply;
+        const reply = await res.text();
+        antwortFeld.innerText = reply;
       } catch (err) {
         console.error(err);
         antwortFeld.innerText = "❌ Es gab ein Problem beim Absenden.";
