@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>GPT Feedback</title>
+</head>
+<body>
+  
+  <h1>1. Was hat die Lehrperson gut gemacht?</h2>
+  <textarea id="feedback" rows="5" cols="60" placeholder="Gib dein Feedback ein..."></textarea><br><br>
+  
+  <button onclick="sendFeedback()">Absenden</button>
+  <p id="status"></p>
+
+  <script>
+    async function sendFeedback() {
+      const userId = document.getElementById('userId').value.trim();
+      const feedback = document.getElementById('feedback').value.trim();
+      const status = document.getElementById('status');
+
+      if (!userId || !feedback) {
+        status.innerText = 'Bitte ID und Feedback eingeben.';
+        return;
+      }
+
+      const response = await fetch('/save-feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, feedback })
+      });
+
+      const text = await response.text();
+      status.innerText = text;
+    }
+  </script>
+</body>
+</html>
