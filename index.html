@@ -5,43 +5,40 @@
   <title>GPT Feedback</title>
 </head>
 <body>
-  <h2>1. Was hat die Lehrperson gut gemacht?</h2>
+  <h1>1. Was hat die Lehrperson gut gemacht?</h1>
 
-  <textarea id="userInput" rows="5" cols="60" placeholder="Schreiben Sie hier Ihr Feedback..."></textarea><br />
-  <button onclick="sendToGPT()">Antwort von GPT holen</button>
+  <textarea id="feedback" rows="6" cols="80" placeholder="Schreiben Sie hier..."></textarea><br><br>
+  <button onclick="senden()">Absenden</button>
 
-  <h3>Antwort von GPT:</h3>
-  <div id="gptResponse" style="border: 1px solid #ccc; padding: 10px;"></div>
+  <h3 id="antwort" style="margin-top: 20px;"></h3>
 
   <script>
-    async function sendToGPT() {
-      const userInput = document.getElementById("userInput").value;
+    async function senden() {
+      const feedback = document.getElementById("feedback").value;
+      const antwortFeld = document.getElementById("antwort");
 
-      // Anfrage an GPT senden
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message: userInput })
-      });
+      if (!feedback.trim()) {
+        antwortFeld.innerText = "Bitte geben Sie Feedback ein.";
+        return;
+      }
 
-      const data = await response.json();
-      const gptReply = data.reply;
+      antwortFeld.innerText = "⏳ GPT denkt nach...";
 
-      // GPT-Antwort anzeigen
-      document.getElementById("gptResponse").innerText = gptReply;
+      try {
+        const res = await fetch("/save-feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ feedback })
+        });
 
-      // Feedback und Antwort in Datenbank speichern
-      await fetch("/save-feedback", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          feedback: userInput
-        })
-      });
+        if (!res.ok) throw new Error("Fehler beim Server");
+
+        const reply = await res.text(); // GPT-Antwort als Text
+        antwortFeld.innerText = "💬 GPT sagt: " + reply;
+      } catch (err) {
+        console.error(err);
+        antwortFeld.innerText = "❌ Es gab ein Problem beim Absenden.";
+      }
     }
   </script>
 </body>
