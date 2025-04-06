@@ -1,20 +1,25 @@
 const express = require("express");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
-const path = require("path"); // hinzugefügt für HTML-Datei
+const { Configuration, OpenAIApi } = require("openai");
+const path = require("path");
 
 const app = express();
 const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
-
-// HTML-Dateien bereitstellen (damit index.html gefunden wird)
 app.use(express.static(__dirname));
 
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
 let collection;
 
+// 🔑 OpenAI API vorbereiten (nutzt Umgebungsvariable OPENAI_API_KEY)
+const openai = new OpenAIApi(new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+}));
+
+// Datenbankverbindung starten
 async function start() {
   await client.connect();
   const db = client.db("gptFeedbackDB");
@@ -23,14 +28,5 @@ async function start() {
 }
 start();
 
-app.post("/save-feedback", async (req, res) => {
-  const { userId, feedback } = req.body;
-  if (!userId || !feedback) return res.status(400).send("Fehlende Daten");
-  await collection.insertOne({ userId, feedback, timestamp: new Date() });
-  res.send("✅ Feedback gespeichert");
-});
-
-// Route zum Ausliefern der HTML-Datei
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
+// 🧠 GPT-Feedback generieren und speichern
+app.post("/gpt-feedback", async (req, res) =>
