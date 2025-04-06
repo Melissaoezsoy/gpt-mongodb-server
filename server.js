@@ -15,11 +15,9 @@ const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
 let collection;
 
-// GPT API-Key aus Umgebungsvariable
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 async function start() {
   await client.connect();
@@ -32,7 +30,6 @@ async function start() {
 }
 start();
 
-// POST-Endpunkt für Feedback
 app.post("/save-feedback", async (req, res) => {
   const { feedback } = req.body;
   if (!feedback) return res.status(400).send("Fehlendes Feedback");
@@ -40,8 +37,8 @@ app.post("/save-feedback", async (req, res) => {
   await collection.insertOne({ feedback, timestamp: new Date() });
 
   try {
-    const completion = await openai.createChatCompletion({
-      model: "gpt-4",
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
@@ -54,7 +51,7 @@ app.post("/save-feedback", async (req, res) => {
       ],
     });
 
-    const reply = completion.data.choices[0].message.content;
+    const reply = completion.choices[0].message.content;
     res.send(reply);
   } catch (error) {
     console.error("GPT Fehler:", error.message);
@@ -62,7 +59,27 @@ app.post("/save-feedback", async (req, res) => {
   }
 });
 
-// Liefert HTML-Seite (optional)
+app.post("/api/chat", async (req, res) => {
+  const { message } = req.body;
+
+  if (!message) {
+    return res.status(400).send("Fehlende Nachricht");
+  }
+
+  try {
+    const chatCompletion = await openai.chat.completions.create({
+      messages: [{ role: "user", content: message }],
+      model: "gpt-3.5-turbo",
+    });
+
+    const reply = chatCompletion.choices[0].message.content;
+    res.json({ reply });
+  } catch (error) {
+    console.error("❌ Fehler bei der OpenAI-Anfrage:", error);
+    res.status(500).send("Fehler bei der GPT-Antwort");
+  }
+});
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
