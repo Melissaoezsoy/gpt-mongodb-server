@@ -5,32 +5,43 @@
   <title>GPT Feedback</title>
 </head>
 <body>
-  
-  <h1>1. Was hat die Lehrperson gut gemacht?</h2>
-  <textarea id="feedback" rows="5" cols="60" placeholder="Gib dein Feedback ein..."></textarea><br><br>
-  
-  <button onclick="sendFeedback()">Absenden</button>
-  <p id="status"></p>
+  <h2>1. Was hat die Lehrperson gut gemacht?</h2>
+
+  <textarea id="userInput" rows="5" cols="60" placeholder="Schreiben Sie hier Ihr Feedback..."></textarea><br />
+  <button onclick="sendToGPT()">Antwort von GPT holen</button>
+
+  <h3>Antwort von GPT:</h3>
+  <div id="gptResponse" style="border: 1px solid #ccc; padding: 10px;"></div>
 
   <script>
-    async function sendFeedback() {
-      const userId = document.getElementById('userId').value.trim();
-      const feedback = document.getElementById('feedback').value.trim();
-      const status = document.getElementById('status');
+    async function sendToGPT() {
+      const userInput = document.getElementById("userInput").value;
 
-      if (!userId || !feedback) {
-        status.innerText = 'Bitte ID und Feedback eingeben.';
-        return;
-      }
-
-      const response = await fetch('/save-feedback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, feedback })
+      // Anfrage an GPT senden
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: userInput })
       });
 
-      const text = await response.text();
-      status.innerText = text;
+      const data = await response.json();
+      const gptReply = data.reply;
+
+      // GPT-Antwort anzeigen
+      document.getElementById("gptResponse").innerText = gptReply;
+
+      // Feedback und Antwort in Datenbank speichern
+      await fetch("/save-feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          feedback: userInput
+        })
+      });
     }
   </script>
 </body>
