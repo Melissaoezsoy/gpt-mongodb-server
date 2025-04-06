@@ -27,34 +27,48 @@
     <p id="antwort"></p>
   </div>
 
-  <script>
-    async function senden() {
-      const feedback = document.getElementById("feedback").value;
-      const antwortFeld = document.getElementById("antwort");
+<script>
+  const messages = [
+    {
+      role: "system",
+      content: "Du gibst konstruktives, freundliches Feedback auf Texte von Schüler*innen.",
+    },
+  ];
 
-      if (!feedback.trim()) {
-        antwortFeld.innerText = "Bitte geben Sie Feedback ein.";
-        return;
-      }
+  async function senden() {
+    const feedback = document.getElementById("feedback").value;
+    const antwortFeld = document.getElementById("antwort");
 
-      antwortFeld.innerText = "⏳ GPT denkt nach...";
-
-      try {
-        const res = await fetch("/save-feedback", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ feedback })
-        });
-
-        if (!res.ok) throw new Error("Fehler beim Server");
-
-        const reply = await res.text();
-        antwortFeld.innerText = reply;
-      } catch (err) {
-        console.error(err);
-        antwortFeld.innerText = "❌ Es gab ein Problem beim Absenden.";
-      }
+    if (!feedback.trim()) {
+      antwortFeld.innerText = "Bitte geben Sie Feedback ein.";
+      return;
     }
-  </script>
+
+    // Nutzer-Nachricht zum Verlauf hinzufügen
+    messages.push({ role: "user", content: feedback });
+
+    antwortFeld.innerText = "⏳ GPT denkt nach...";
+
+    try {
+      const res = await fetch("/save-feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ feedback, messages }) // Verlauf mitsenden
+      });
+
+      if (!res.ok) throw new Error("Fehler beim Server");
+
+      const reply = await res.text();
+      messages.push({ role: "assistant", content: reply }); // GPT-Antwort speichern
+
+      // Zeige Verlauf
+      antwortFeld.innerHTML += `<p><strong>Du:</strong> ${feedback}</p><p><strong>GPT:</strong> ${reply}</p>`;
+      document.getElementById("feedback").value = ""; // Eingabe leeren
+    } catch (err) {
+      console.error(err);
+      antwortFeld.innerText = "❌ Es gab ein Problem beim Absenden.";
+    }
+  }
+</script>
 </body>
 </html>
