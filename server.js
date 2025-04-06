@@ -6,22 +6,21 @@ const { Configuration, OpenAIApi } = require("openai");
 
 const app = express();
 const port = process.env.PORT || 3000;
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// MongoDB-Verbindung
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
 let collection;
 
-// GPT-Konfiguration
+// GPT API-Key aus Umgebungsvariable
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
-// Starte Mongo und Server
 async function start() {
   await client.connect();
   const db = client.db("gptFeedbackDB");
@@ -33,7 +32,7 @@ async function start() {
 }
 start();
 
-// Feedback speichern
+// POST-Endpunkt für Feedback
 app.post("/save-feedback", async (req, res) => {
   const { feedback } = req.body;
   if (!feedback) return res.status(400).send("Fehlendes Feedback");
@@ -46,7 +45,7 @@ app.post("/save-feedback", async (req, res) => {
       messages: [
         {
           role: "system",
-          content: "Du bist ein freundlicher KI-Coach, der Feedback auf studentische Antworten gibt.",
+          content: "Du gibst konstruktives, freundliches Feedback auf Texte von Schüler*innen.",
         },
         {
           role: "user",
@@ -58,4 +57,12 @@ app.post("/save-feedback", async (req, res) => {
     const reply = completion.data.choices[0].message.content;
     res.send(reply);
   } catch (error) {
-    console.error("OpenAI Fehler:", error.message);
+    console.error("GPT Fehler:", error.message);
+    res.status(500).send("Fehler bei der GPT-Antwort");
+  }
+});
+
+// Liefert HTML-Seite (optional)
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
