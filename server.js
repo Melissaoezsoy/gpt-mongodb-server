@@ -1,16 +1,15 @@
-
 const express = require("express");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
 const path = require("path");
-const { readFileSync } = require("fs"); // ➕ NEU: für das Lesen der Prompt-Datei
+const { readFileSync } = require("fs");
 const OpenAI = require("openai");
-const digcompedu = require("./digcompedu_observe_teilkompetenzen_de_v1.json");
 require("dotenv").config();
+
+// 🔗 JSON-Daten einbinden
 const digcompedu = require("./digcompedu_observe_teilkompetenzen_de_v1.json");
 const musterloesungen = require("./musterloesungen_praxisrepraesentationen_v1.json");
 const peerfeedback = require("./peerfeedback_kriterien_kerman2024.json");
-
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -27,7 +26,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// ➕ NEU: Systemprompt beim Start aus Datei lesen
+// 📄 Systemprompt aus Datei laden
 const systemPrompt = readFileSync(
   path.join(__dirname, "gpt_feedback_prompt_v2_full"),
   "utf8"
@@ -51,7 +50,7 @@ app.post("/save-feedback", async (req, res) => {
     return res.status(400).send("Fehlende Angaben (ID, Feedback oder Verlauf)");
   }
 
-  // Speichern in MongoDB
+  // ⏺ Feedback in MongoDB speichern
   await collection.insertOne({
     userId,
     feedback,
@@ -60,7 +59,7 @@ app.post("/save-feedback", async (req, res) => {
   });
 
   try {
-    // ➕ GPT-Kontext mit Systemprompt kombinieren
+    // 🧠 GPT-Anfrage mit Systemprompt
     const chatMessages = [
       { role: "system", content: systemPrompt },
       ...messages
@@ -79,7 +78,7 @@ app.post("/save-feedback", async (req, res) => {
   }
 });
 
-// HTML-Datei ausliefern
+// 🔍 HTML-Datei ausliefern
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
