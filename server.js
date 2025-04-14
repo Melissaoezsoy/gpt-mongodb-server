@@ -7,6 +7,10 @@ const { readFileSync } = require("fs"); // ➕ NEU: für das Lesen der Prompt-Da
 const OpenAI = require("openai");
 const digcompedu = require("./digcompedu_observe_teilkompetenzen_de_v1.json");
 require("dotenv").config();
+const digcompedu = require("./digcompedu_observe_teilkompetenzen_de_v1.json");
+const musterloesungen = require("./musterloesungen_praxisrepraesentationen_v1.json");
+const peerfeedback = require("./peerfeedback_kriterien_kerman2024.json");
+
 
 const app = express();
 const port = process.env.PORT || 3000;
