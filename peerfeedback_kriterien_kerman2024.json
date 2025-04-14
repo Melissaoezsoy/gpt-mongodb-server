@@ -1,0 +1,48 @@
+{
+  "affective": {
+    "beschreibung": "Emotionale Rahmung des Peer-Feedbacks",
+    "kriterien": [
+      "Ermutigend",
+      "Neutral",
+      "Entmutigend"
+    ]
+  },
+  "cognitive": {
+    "beschreibung": "Kognitive Dimension des Peer-Feedbacks",
+    "unterkategorien": {
+      "description": {
+        "beschreibung": "Sachliche Beschreibung der beobachteten Situation ohne Wertung",
+        "stufen": ["Nicht erwähnt", "Teilweise erwähnt", "Ausführlich beschrieben"]
+      },
+      "identification": {
+        "beschreibung": "Identifikation und Lokalisierung von Schlüsselmomenten in der Unterrichtssituation",
+        "stufen": ["Nicht erwähnt", "Erwähnt, aber nicht lokalisiert", "Erwähnt und lokalisiert"]
+      },
+      "justification": {
+        "beschreibung": "Begründung der Rückmeldung mit...",
+        "quellen": {
+          "beispiele": {
+            "beschreibung": "Beispiele aus der beobachteten Situation",
+            "stufen": ["Nicht erwähnt", "Erwähnt, nicht begründet", "Erwähnt und begründet"]
+          },
+          "theorie": {
+            "beschreibung": "Verwendung pädagogischer Theorien, Modelle oder Konzepte",
+            "stufen": ["Nicht erwähnt", "Erwähnt, nicht begründet", "Erwähnt und begründet"]
+          },
+          "erfahrung": {
+            "beschreibung": "Bezug auf eigene praktische Erfahrungen",
+            "stufen": ["Nicht erwähnt", "Erwähnt, nicht begründet", "Erwähnt und begründet"]
+          }
+        }
+      }
+    }
+  },
+  "constructive": {
+    "beschreibung": "Konstruktive Empfehlungen und nächste Schritte",
+    "kriterien": [
+      "Keine Empfehlung",
+      "Allgemeine Empfehlung ohne Handlungsplan",
+      "Konkrete Empfehlung mit Handlungsplan"
+    ]
+  }
+}
