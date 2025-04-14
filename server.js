@@ -5,6 +5,7 @@ const { MongoClient } = require("mongodb");
 const path = require("path");
 const { readFileSync } = require("fs"); // ➕ NEU: für das Lesen der Prompt-Datei
 const OpenAI = require("openai");
+const digcompedu = require("./digcompedu_observe_teilkompetenzen_de_v1.json");
 require("dotenv").config();
 
 const app = express();
