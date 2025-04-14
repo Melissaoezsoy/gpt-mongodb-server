@@ -1,0 +1,37 @@
+{
+  "Erstellung_Auswahl_Praesentation": {
+    "beschreibung": "Das digitale Tool/Medium unterstützt die Erstellung, Auswahl, Präsentation und Thematisierung von Inhalten und Fachmethoden.",
+    "kriterien": [
+      "Generierung passgenauer Lerninhalte und Aufgaben (z. B. Sprechgeschwindigkeit im Hörverstehen, Worterklärung beim Leseverstehen, Text-to-Speech/Speech-to-Text)",
+      "Auswahl bedeutsamer Lerninhalte (z. B. Onlinezugang zu authentischen digitalen Materialien wie Tweets für interkulturelle Themen)",
+      "Generierung oder Auswahl kreativer didaktischer Methoden (z. B. KI-gestützte Textanalysen, Übersetzungs-Apps, Sprachverbesserungs-Tools wie DeepL)",
+      "Präsentation von Lerninhalten und Methoden (z. B. Abspielen von Hörtexten, Meinungsabfragen über Online-Tools wie oncoo)"
+    ]
+  },
+  "Kommunikative_Kognitive_Aktivierung": {
+    "beschreibung": "Das digitale Tool/Medium fördert die kommunikative und kognitive Aktivierung der Lernenden.",
+    "kriterien": [
+      "Sprachliche Tiefe der Sprachproduktion (z. B. Mindestwortanzahl für Texteingaben, KI-gestützte Gesprächspartner wie Chatbots oder Alexa)",
+      "Kreative und/oder kritische Auseinandersetzung mit Lerninhalten (z. B. digitale Diskussionsforen, interaktive Schreibprojekte)",
+      "Tiefe Verarbeitung der Lerninhalte bei rezeptiven Aktivitäten (z. B. Video-Interaktionen mit integrierten Aufgaben, Scaffolding, spielbasiertes Lernen zur Wortschatzförderung)"
+    ]
+  },
+  "Unterstuetzung_Ueben": {
+    "beschreibung": "Das digitale Tool/Medium unterstützt gezieltes Üben.",
+    "kriterien": [
+      "Ausreichende Denkzeit für Lernende (z. B. Online-Tools wie Mentimeter zur Sammlung von Gedanken)",
+      "Fehlerselbstkorrektur durch die Lernenden (z. B. Fehlerhinweise ohne automatische Korrektur, Grammarly, KI-Schreibassistenten)",
+      "Zeitökonomisches Üben (z. B. schnellere Feedbackphasen, Wegfall von Wartezeiten durch digitale Lösungen)",
+      "Adaptive Anpassung des Schwierigkeitsgrads (z. B. individuell angepasstes Feedback oder Erklärungen)"
+    ]
+  },
+  "Feedback_Assessment": {
+    "beschreibung": "Das digitale Tool/Medium unterstützt Feedback- und Bewertungsprozesse.",
+    "kriterien": [
+      "Fortschrittsnachverfolgung (z. B. Lernstand auf Plattformen einsehbar für Lehrkräfte)",
+      "Self- und Peer-Assessment (z. B. geteilte Dokumente zur Selbsteinschätzung und gegenseitigem Feedback)",
+      "Transparente Bewertung (z. B. Bewertungstabellen mit anonymisierten Namen)",
+      "Adaptive Testsysteme (z. B. KI-gestützte adaptive Testsysteme wie Duolingo-Äquivalente)"
+    ]
+  }
+}
