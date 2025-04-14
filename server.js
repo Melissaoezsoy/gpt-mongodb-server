@@ -7,9 +7,16 @@ const OpenAI = require("openai");
 require("dotenv").config();
 
 // 🔗 JSON-Daten einbinden
-const digcompedu = require("./digcompedu_observe_teilkompetenzen_de_v1.json");
-const musterloesungen = require("./musterloesungen_praxisrepraesentationen_v1.json");
-const peerfeedback = require("./peerfeedback_kriterien_kerman2024.json");
+const fs = require('fs');
+
+const digcompeduIndikatoren = JSON.parse(fs.readFileSync('./digcompedu_observe_teilkompetenzen_de_v1.json', 'utf-8'));
+const peerFeedbackKriterien = JSON.parse(fs.readFileSync('./peerfeedback_kriterien_kerman2024.json', 'utf-8'));
+const musterloesungen = JSON.parse(fs.readFileSync('./musterloesungen_praxisrepraesentationen_v1.json', 'utf-8'));
+
+// Test, ob JSON geladen wurde:
+console.log('DigCompEdu geladen:', !!digcompeduIndikatoren);
+console.log('PeerFeedback Kriterien geladen:', !!peerFeedbackKriterien);
+console.log('Musterlösungen geladen:', !!musterloesungen);
 
 const app = express();
 const port = process.env.PORT || 3000;
