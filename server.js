@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
 const path = require("path");
+const { readFileSync } = require("fs"); // ➕ NEU: für das Lesen der Prompt-Datei
 const OpenAI = require("openai");
 
 const app = express();
@@ -18,6 +19,12 @@ let collection;
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+// ➕ NEU: Systemprompt beim Start aus Datei lesen
+const systemPrompt = readFileSync(
+  path.join(__dirname, "gpt_feedback_prompt_v2_full"),
+  "utf8"
+);
 
 async function start() {
   await client.connect();
@@ -46,9 +53,15 @@ app.post("/save-feedback", async (req, res) => {
   });
 
   try {
+    // ➕ GPT-Kontext mit Systemprompt kombinieren
+    const chatMessages = [
+      { role: "system", content: systemPrompt },
+      ...messages
+    ];
+
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
-      messages
+      messages: chatMessages
     });
 
     const reply = completion.choices[0].message.content;
