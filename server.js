@@ -1,10 +1,11 @@
-require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
 const path = require("path");
 const { readFileSync } = require("fs"); // ➕ NEU: für das Lesen der Prompt-Datei
 const OpenAI = require("openai");
+require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 3000;
