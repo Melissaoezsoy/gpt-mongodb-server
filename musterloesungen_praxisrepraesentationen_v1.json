@@ -1,0 +1,55 @@
+{
+  "praxisrepraesentation_1": {
+    "beschreibung": {
+      "setting": "Moderner Klassenraum mit Smartboard und Tablets",
+      "szenario": "Die Lehrkraft zeigt ein KI-generiertes Bild (DALL·E), welches unbeabsichtigt Stereotype reproduziert. Die Klasse diskutiert kritisch über Bias, Vorurteile, Medienkritik und Verantwortung beim Einsatz von KI.",
+      "didaktischer_fokus": [
+        "Kritisch-reflexiver Umgang mit KI-generierten Inhalten",
+        "Ethische Medienbildung",
+        "Förderung von Diskussion und Perspektivwechsel",
+        "Digitale Urteilskompetenz"
+      ]
+    },
+    "musterloesung": {
+      "1. unterrichtsplanung": {
+        "1.1": 4,
+        "1.2": 4,
+        "1.3": 4,
+        "1.4": 1
+      },
+      "2. unterricht": {
+        "2.1": 4,
+        "2.2": 4,
+        "2.3": 4,
+        "2.4": 4
+      },
+      "3. interaktion": {
+        "3.1": 0,
+        "3.2": 0,
+        "3.3": 0
+      },
+      "4. lernunterstuetzung": {
+        "4.1": 4,
+        "4.2": 1,
+        "4.3": 1
+      },
+      "5. kollaboratives_lernen": {
+        "5.1": 0,
+        "5.2": 0,
+        "5.3": 0
+      },
+      "6. selbstreguliertes_lernen": {
+        "6.1": 0,
+        "6.2": 0,
+        "6.3": 0
+      }
+    }
+  },
+  "bewertungsskala": {
+    "0": "nicht beobachtbar / nicht erfüllt",
+    "1": "sehr gering erfüllt",
+    "2": "eher erfüllt",
+    "3": "gut erfüllt",
+    "4": "vollständig erfüllt"
+  }
+}
