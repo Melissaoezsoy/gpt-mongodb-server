@@ -51,7 +51,7 @@ async function start() {
 start();
 
 app.post("/save-feedback", async (req, res) => {
-  const { userId, feedback, messages } = req.body;
+  const { userId, videoId, feedback, messages } = req.body;
 
   if (!userId || !feedback || !messages) {
     return res.status(400).send("Fehlende Angaben (ID, Feedback oder Verlauf)");
@@ -60,6 +60,7 @@ app.post("/save-feedback", async (req, res) => {
   // ⏺ Feedback in MongoDB speichern
   await collection.insertOne({
     userId,
+    videoId,
     feedback,
     messages,
     timestamp: new Date()
