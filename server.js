@@ -74,7 +74,7 @@ app.post("/save-feedback", async (req, res) => {
     ];
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4-turbo",
       messages: chatMessages
     });
 
