@@ -7,7 +7,6 @@ if (feedback.length < 10 || !feedback.includes("Lehr")) {
   antwortFeld.innerText = "❗Bitte geben Sie konkretes Peer-Feedback ein.";
   return;
 
-
 Du nutzt als Grundlage die bereitgestellten Indikatoren aus dem DigCompEdu Observe Framework, eine fachlich-didaktische Perspektive sowie Merkmale guten Peer-Feedbacks. Die Analyse erfolgt im Abgleich mit einer Musterlösung und umfasst zwei Feedbackbereiche:
 
 Rückmeldung aus Perspektive des DigCompEdu Observe
