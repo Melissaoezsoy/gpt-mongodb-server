@@ -3,61 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <title>GPT Feedback</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #fdfdfd;
-    }
-
-    #verlauf {
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      padding: 15px;
-      max-height: 400px;
-      overflow-y: auto;
-      background: #fafafa;
-    }
-
-    #verlauf p {
-      margin: 6px 0;
-    }
-
-    #verlauf hr {
-      border: none;
-      border-top: 1px solid #ddd;
-      margin: 10px 0;
-    }
-
-    textarea, input[type="text"] {
-      width: 100%;
-      font-size: 1rem;
-    }
-
-    button {
-      background-color: #2e8b57;
-      color: white;
-      padding: 10px 20px;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    button:hover {
-      background-color: #246b46;
-    }
-  </style>
 </head>
 <body>
   <h1>1. Was hat die Lehrperson gut gemacht?</h1>
 
-  <div id="verlauf"></div>
+  <!-- Verlauf zuerst anzeigen -->
+  <div id="verlauf" style="margin-bottom: 30px; border: 1px solid #ccc; padding: 10px;"></div>
 
+  <!-- Eingabefelder danach -->
   <label for="teilnehmerId">Teilnehmer-ID:</label><br>
   <input type="text" id="teilnehmerId" placeholder="z. B. TN-001"><br><br>
 
-  <textarea id="feedback" rows="6" cols="80" placeholder="Schreiben Sie hier..."></textarea><br>
+  <textarea id="feedback" rows="6" cols="80" placeholder="Schreiben Sie hier..."></textarea><br><br>
   <button onclick="senden()">Absenden</button>
 
   <script>
@@ -69,18 +26,15 @@
       const verlaufBox = document.getElementById("verlauf");
 
       if (!feedback.trim() || !userId.trim()) {
-        verlaufBox.innerHTML = "<p style='color: red;'>⚠️ Bitte geben Sie sowohl Feedback als auch Ihre ID ein.</p>" + verlaufBox.innerHTML;
+        verlaufBox.innerHTML += `<p><strong>Agent:</strong> ⚠️ Bitte geben Sie sowohl Feedback als auch Ihre ID ein.</p>`;
         return;
       }
 
       verlauf.push({ role: "user", content: feedback });
+      verlaufBox.innerHTML += `<p><strong>Du:</strong> ${feedback}</p>`;
+      verlaufBox.innerHTML += `<p><em>GPT denkt nach...</em></p>`;
 
-      // zeige "denkt nach"
-      verlaufBox.innerHTML = `
-        <p><strong>Du:</strong> ${feedback}</p>
-        <p><em>⏳ Agent denkt nach...</em></p>
-        <hr>
-      ` + verlaufBox.innerHTML;
+      document.getElementById("feedback").value = "";
 
       try {
         const res = await fetch("/save-feedback", {
@@ -94,19 +48,15 @@
 
         verlauf.push({ role: "assistant", content: reply });
 
-        // Verlauf neu aufbauen mit letzter Antwort ganz oben
-        let verlaufHtml = "";
-        for (let i = verlauf.length - 1; i >= 0; i--) {
-          const msg = verlauf[i];
+        // Verlauf neu aufbauen
+        verlaufBox.innerHTML = "";
+        verlauf.forEach(msg => {
           const tag = msg.role === "user" ? "Du" : "Agent";
-          verlaufHtml += `<p><strong>${tag}:</strong> ${msg.content}</p><hr>`;
-        }
-        verlaufBox.innerHTML = verlaufHtml;
-
-        document.getElementById("feedback").value = ""; // Eingabe leeren
+          verlaufBox.innerHTML += `<p><strong>${tag}:</strong> ${msg.content}</p>`;
+        });
       } catch (err) {
         console.error(err);
-        verlaufBox.innerHTML = "<p style='color: red;'>❌ Fehler beim Abrufen der Antwort.</p>" + verlaufBox.innerHTML;
+        verlaufBox.innerHTML += `<p><strong>Agent:</strong> ❌ Fehler beim Abrufen der Antwort.</p>`;
       }
     }
   </script>
