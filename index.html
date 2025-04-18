@@ -3,36 +3,88 @@
 <head>
   <meta charset="UTF-8" />
   <title>GPT Feedback</title>
+  <style>
+    #verlauf {
+      margin-bottom: 30px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+    }
+    #verlauf .msg {
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      white-space: pre-line;
+    }
+    .user {
+      background-color: #e0e0e0;
+    }
+    .agent {
+      background-color: #d0ebff;
+    }
+  </style>
 </head>
 <body>
   <h1>1. Was hat die Lehrperson gut gemacht?</h1>
 
   <!-- Verlauf zuerst anzeigen -->
-  <div id="verlauf" style="margin-bottom: 30px; border: 1px solid #ccc; padding: 10px;"></div>
+  <div id="verlauf"></div>
 
   <!-- Eingabefelder danach -->
   <label for="teilnehmerId">Teilnehmer-ID:</label><br>
   <input type="text" id="teilnehmerId" placeholder="z. B. TN-001"><br><br>
 
   <textarea id="feedback" rows="6" cols="80" placeholder="Schreiben Sie hier..."></textarea><br><br>
-  <button onclick="senden()">Absenden</button>
+  <button id="sendenBtn" onclick="senden()">Absenden</button>
+  <button id="weiterBtn" onclick="goToNext()" disabled>Weiter</button>
 
   <script>
     const verlauf = [];
+
+    function delayText(text, container, role, callback) {
+      const p = document.createElement("p");
+      p.classList.add("msg", role === "user" ? "user" : "agent");
+      container.appendChild(p);
+      let index = 0;
+
+      function typeChar() {
+        if (index < text.length) {
+          const currentChar = text[index];
+          p.innerHTML += currentChar === "\n" ? "<br>" : currentChar;
+          index++;
+          setTimeout(typeChar, 12); // Schreibgeschwindigkeit
+        } else if (callback) {
+          callback();
+        }
+      }
+
+      typeChar();
+    }
 
     async function senden() {
       const feedback = document.getElementById("feedback").value;
       const userId = document.getElementById("teilnehmerId").value;
       const verlaufBox = document.getElementById("verlauf");
+      const sendenBtn = document.getElementById("sendenBtn");
+      const weiterBtn = document.getElementById("weiterBtn");
 
       if (!feedback.trim() || !userId.trim()) {
-        verlaufBox.innerHTML += `<p><strong>Agent:</strong> ⚠️ Bitte geben Sie sowohl Feedback als auch Ihre ID ein.</p>`;
+        verlaufBox.innerHTML += `<p class="msg agent"><strong>Agent:</strong> ⚠️ Bitte geben Sie sowohl Feedback als auch Ihre ID ein.</p>`;
         return;
       }
 
+      sendenBtn.disabled = true;
+      weiterBtn.disabled = true;
+
       verlauf.push({ role: "user", content: feedback });
-      verlaufBox.innerHTML += `<p><strong>Du:</strong> ${feedback}</p>`;
-      verlaufBox.innerHTML += `<p><em>GPT denkt nach...</em></p>`;
+      delayText(feedback, verlaufBox, "user");
+      const loadingMsg = document.createElement("p");
+      loadingMsg.className = "msg agent";
+      loadingMsg.innerHTML = "<em>Agent denkt nach...</em>";
+      verlaufBox.appendChild(loadingMsg);
 
       document.getElementById("feedback").value = "";
 
@@ -47,17 +99,20 @@
         const reply = await res.text();
 
         verlauf.push({ role: "assistant", content: reply });
-
-        // Verlauf neu aufbauen
-        verlaufBox.innerHTML = "";
-        verlauf.forEach(msg => {
-          const tag = msg.role === "user" ? "Du" : "Agent";
-          verlaufBox.innerHTML += `<p><strong>${tag}:</strong> ${msg.content}</p>`;
+        verlaufBox.removeChild(loadingMsg);
+        delayText(reply, verlaufBox, "agent", () => {
+          weiterBtn.disabled = false;
         });
       } catch (err) {
         console.error(err);
-        verlaufBox.innerHTML += `<p><strong>Agent:</strong> ❌ Fehler beim Abrufen der Antwort.</p>`;
+        verlaufBox.innerHTML += `<p class="msg agent"><strong>Agent:</strong> ❌ Fehler beim Abrufen der Antwort.</p>`;
+      } finally {
+        sendenBtn.disabled = false;
       }
+    }
+
+    function goToNext() {
+      alert("Weiter zur nächsten Aufgabe"); // Platzhalterfunktion
     }
   </script>
 </body>
