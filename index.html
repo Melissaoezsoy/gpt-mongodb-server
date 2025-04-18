@@ -34,10 +34,7 @@
   <div id="verlauf"></div>
 
   <!-- Eingabefelder danach -->
-  <label for="teilnehmerId">Teilnehmer-ID:</label><br>
-  <input type="text" id="teilnehmerId" placeholder="z. B. TN-001"><br><br>
-
-  <textarea id="feedback" rows="6" cols="80" placeholder="Schreiben Sie hier..."></textarea><br><br>
+  <textarea id="feedback" rows="6" cols="80" placeholder="Deine Antwort..."></textarea><br><br>
   <button id="sendenBtn" onclick="senden()">Absenden</button>
   <button id="weiterBtn" onclick="goToNext()" disabled>Weiter</button>
 
@@ -66,13 +63,12 @@
 
     async function senden() {
       const feedback = document.getElementById("feedback").value;
-      const userId = document.getElementById("teilnehmerId").value;
       const verlaufBox = document.getElementById("verlauf");
       const sendenBtn = document.getElementById("sendenBtn");
       const weiterBtn = document.getElementById("weiterBtn");
 
-      if (!feedback.trim() || !userId.trim()) {
-        verlaufBox.innerHTML += `<p class="msg agent"><strong>Agent:</strong> ⚠️ Bitte geben Sie sowohl Feedback als auch Ihre ID ein.</p>`;
+      if (!feedback.trim()) {
+        verlaufBox.innerHTML += `<p class="msg agent"><strong>Agent:</strong> ⚠️ Bitte geben Sie Feedback ein.</p>`;
         return;
       }
 
@@ -92,7 +88,7 @@
         const res = await fetch("/save-feedback", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId, feedback, messages: verlauf })
+          body: JSON.stringify({ feedback, messages: verlauf })
         });
 
         if (!res.ok) throw new Error("Serverfehler");
