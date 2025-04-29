@@ -2,18 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
 const path = require("path");
-const { readFileSync } = require("fs");
 const OpenAI = require("openai");
 require("dotenv").config();
+const fs = require("fs");
 
-// 🔗 JSON-Daten einbinden
-const fs = require('fs');
-
+// 📥 JSON-Daten einbinden
 const digcompeduIndikatoren = JSON.parse(fs.readFileSync('./digcompedu_observe_teilkompetenzen_de_v1.json', 'utf-8'));
 const peerFeedbackKriterien = JSON.parse(fs.readFileSync('./peerfeedback_kriterien_kerman2024.json', 'utf-8'));
 const musterloesungen = JSON.parse(fs.readFileSync('./musterloesungen_praxisrepraesentationen_v1.json', 'utf-8'));
 
-// Test, ob JSON geladen wurde:
 console.log('DigCompEdu geladen:', !!digcompeduIndikatoren);
 console.log('PeerFeedback Kriterien geladen:', !!peerFeedbackKriterien);
 console.log('Musterlösungen geladen:', !!musterloesungen);
@@ -33,20 +30,16 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// 📄 Systemprompt aus Datei laden
-const systemPrompt = readFileSync(
-  path.join(__dirname, "gpt_feedback_prompt_v2_full"),
-  "utf8"
-);
+const ASSISTANT_ID = "asst_5WP9TBLxu2VN23DkO77Rwnnb"; // 👉 Deine Assistant-ID hier 
 
 async function start() {
   await client.connect();
   const db = client.db("gptFeedbackDB");
   collection = db.collection("responses");
 
-  app.listen(port, () =>
-    console.log(`✅ Server läuft auf Port ${port}`)
-  );
+  app.listen(port, () => {
+    console.log(`✅ Server läuft auf Port ${port}`);
+  });
 }
 start();
 
@@ -57,7 +50,6 @@ app.post("/save-feedback", async (req, res) => {
     return res.status(400).send("Fehlende Angaben (ID, Feedback oder Verlauf)");
   }
 
-  // ⏺ Feedback in MongoDB speichern
   await collection.insertOne({
     userId,
     videoId,
@@ -67,26 +59,33 @@ app.post("/save-feedback", async (req, res) => {
   });
 
   try {
-    // 🧠 GPT-Anfrage mit Systemprompt
-    const chatMessages = [
-      { role: "system", content: systemPrompt },
-      ...messages
-    ];
-
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: chatMessages
+    // 🧠 GPT Assistant über Threads & Runs
+    const thread = await openai.beta.threads.create();
+    await openai.beta.threads.messages.create(thread.id, {
+      role: "user",
+      content: feedback, // Optional: du kannst auch `messages.map(...)` verwenden, falls komplex
     });
 
-    const reply = completion.choices[0].message.content;
+    const run = await openai.beta.threads.runs.create(thread.id, {
+      assistant_id: ASSISTANT_ID
+    });
+
+    let runStatus;
+    do {
+      await new Promise(r => setTimeout(r, 1000));
+      runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
+    } while (runStatus.status !== "completed");
+
+    const threadMessages = await openai.beta.threads.messages.list(thread.id);
+    const reply = threadMessages.data[0].content[0].text.value;
+
     res.send(reply);
   } catch (error) {
-    console.error("❌ GPT-Fehler:", error);
+    console.error("❌ GPT-Assistant-Fehler:", error);
     res.status(500).send("Fehler bei der GPT-Antwort.");
   }
 });
 
-// 🔍 HTML-Datei ausliefern
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
