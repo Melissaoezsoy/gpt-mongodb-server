@@ -34,6 +34,8 @@ const ASSISTANT_ID = "asst_5WP9TBLxu2VN23DkO77Rwnnb"; // 👉 Deine Assistant-ID
 
 async function start() {
   await client.connect();
+  console.log("✅ MongoDB verbunden"); // ← HIER EINFÜGEN
+
   const db = client.db("gptFeedbackDB");
   collection = db.collection("responses");
 
@@ -41,6 +43,7 @@ async function start() {
     console.log(`✅ Server läuft auf Port ${port}`);
   });
 }
+
 start();
 
 app.post("/save-feedback", async (req, res) => {
